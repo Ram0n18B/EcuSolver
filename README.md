@@ -1,7 +1,7 @@
 # EcuSolver
 Proyecto de PR3 A-2024 ULA. Aplicacion de aprendizaje y resolucion de ecuaciones.
 
-1- Objetivo: Desarrollar una aplicación en C++ que permita ingresar una ecuación matemática, validar su corrección y determinar si tiene solución, utilizando mostrando el resultado en una interfaz gráfica utilizando la biblioteca SDL.
+1- Objetivo: Desarrollar una aplicación en C++ que permita ingresar una ecuación matemática, validar su corrección y determinar si tiene solución, mostrando el resultado en una interfaz gráfica utilizando la biblioteca SDL.
 
 2- Requerimientos funcionales:
 	- La aplicación debe proporcionar una ventana gráfica donde el usuario pueda ingresar una ecuación matemática.
