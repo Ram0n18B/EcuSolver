@@ -31,6 +31,8 @@ public:
     MonomialPtr operator [] (size_t i) noexcept;
 
     const Polynomial::container_type& get_container() const noexcept;
+
+    double independant_term() noexcept;
 };
 
 bool operator !=(const Polynomial& first, const Polynomial& second) noexcept;

@@ -52,6 +52,18 @@ const Polynomial::container_type& Polynomial::get_container() const noexcept
     return Polynomial::Base::c;
 }
 
+double Polynomial::independant_term() noexcept
+{
+    for(size_t i = 0; i < this->size(); ++i)
+    {
+        if(this->get_container()[i]->get_exponent() == 0)
+        {
+            return this->get_container()[i]->get_coefficient();
+        }
+    }
+    return 0;
+}
+
 bool operator !=(const Polynomial& first, const Polynomial& second) noexcept
 {
     if(first.size() != second.size())
