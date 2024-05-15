@@ -23,7 +23,7 @@ class Polynomial: public std::priority_queue<MonomialPtr, std::vector<MonomialPt
 
 public:
 
-    double evaluate(double value) noexcept;
+    double operator () (double value) noexcept;
 
     //Fill the polynomial with null terms in order to keep the esponent decreasing sequence
     void fill_null_terms() noexcept;
@@ -33,6 +33,8 @@ public:
     const Polynomial::container_type& get_container() const noexcept;
 
     double independant_term() noexcept;
+
+    void reduce_grade() noexcept;
 };
 
 bool operator !=(const Polynomial& first, const Polynomial& second) noexcept;

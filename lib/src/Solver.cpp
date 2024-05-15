@@ -134,19 +134,14 @@ std::vector<double> Solver::grade_2_polynomial(Polynomial& pN, std::vector<doubl
     return solutions;
 }
 
-std::vector<double> Solver::grade_3_or_greater_polynomial(Polynomial& pN) noexcept
+std::vector<double> Solver::grade_3_or_greater_polynomial(Polynomial& pN, size_t& grade) noexcept
 {
-    size_t initial_grade = get_grade(pN);
     std::vector<double> solutions = Solver::Ruffini(pN);
-    if(solutions.size() < initial_grade && get_grade(pN))
+    if(get_grade(pN) > 2)
     {
-        return Newton_Raphson(pN, solutions);
+        return Newton_Raphson_loop(pN, solutions, grade);
     }
-    if(get_grade(pN) == 2)
-    {
-        return grade_2_polynomial(pN, solutions);
-    }
-    return {};
+    return solutions;
 }
 
 Polynomial Solver::derivative(Polynomial& pn)
@@ -256,12 +251,164 @@ size_t superindex(char prefix, size_t& i, std::string& expression)
 
 std::vector<double> Solver::Ruffini(Polynomial& pN) noexcept
 {
-    return {};
+    std::vector<double> solutions;
+    int indTerm = int(pN.independant_term());
+    if(indTerm == 0)
+    {
+        solutions.push_back(0);
+    }
+    while(indTerm == 0)
+    {
+        pN.reduce_grade();
+        indTerm = int(pN.independant_term());
+    }
+    std::vector<int> divisors = {-1, 1};
+    for(int i = 2; i < indTerm; ++i)
+    {
+        if(int(indTerm) % i == 0)
+        {
+            divisors.push_back(-i);
+            divisors.push_back(i);
+        }
+    }
+    divisors.push_back(indTerm);
+    divisors.push_back(-indTerm);
+    size_t ssize = Solver::get_grade(pN);
+    for(size_t i = 0; i < divisors.size(); ++i)
+    {
+        Polynomial backup = pN;
+        std::pair<Polynomial, double> result = synthetic_division(pN, divisors[i]);
+        if(result.second != 0)
+        {
+            pN = backup;
+        }
+        else
+        {
+            pN = result.first;
+            solutions.push_back(divisors[i]);
+            if(solutions.size() == ssize)
+            {break;}            
+        }
+    }
+    return solutions;
 }
 
-std::vector<double> Solver::Newton_Raphson(Polynomial& pN, std::vector<double> solutions) noexcept
+std::pair<Polynomial, double> synthetic_division(Polynomial& pN, double divisor) noexcept
+{ 
+    Polynomial quotient;
+    quotient.emplace(new Monomial(pN.top()->get_coefficient(), pN.top()->get_variable(), pN.top()->get_exponent() - 1));
+    pN.pop();
+    double rest;
+    for(size_t i = 1; !(pN.empty()); ++i)
+    {
+        double coefficient = divisor * quotient[i-1]->get_coefficient() + pN.top()->get_coefficient();
+        std::string variable = pN.top()->get_variable();
+        int exponent = pN.top()->get_exponent() - 1;
+        if(exponent == -1)
+        {
+            rest = coefficient;
+            break;
+        }
+        quotient.emplace(new Monomial(coefficient, variable, exponent));
+        pN.pop();
+    }
+    return std::make_pair(quotient, rest);
+}
+
+std::vector<double> Solver::Newton_Raphson_loop(Polynomial& pN, std::vector<double>& solutions, size_t& grade) noexcept
 {
-    return {};
+    Polynomial derivative = Solver::derivative(pN);
+    std::vector<double> nearRoots;
+    if(!(repeated(0, solutions)))
+    {
+        nearRoots.push_back(0);
+    }
+    double indTerm = absolute_value(pN.independant_term());
+    for(double i = 1; i <= indTerm; ++i)
+    {
+        if(!(repeated(-i, solutions)))
+        {
+            nearRoots.push_back(-i);
+        }
+        if(!(repeated(i, solutions)))
+        {
+            nearRoots.push_back(i);
+        }
+    }
+    for(size_t i = 0; i < nearRoots.size(); ++i)
+    {
+        auto [aproximation, mistake] = Newton_Raphson(pN, derivative, nearRoots[i], grade);
+        if(mistake < 0.000001)
+        {
+            solutions.push_back(aproximation);
+            pN = synthetic_division(pN, aproximation).first;
+            derivative = Solver::derivative(pN);
+        }
+        if(solutions.size() == grade - 2)
+        {break;}
+    }
+    return solutions;
+}
+
+bool repeated(double num, std::vector<double>& solutions)
+{
+    if(solutions.empty())
+    {
+        return false;
+    }
+    if(num == 0 && solutions[0] == 0)
+    {
+        return true;
+    }
+    if(num == 0)
+    {
+        return false;
+    }
+    size_t max_value;
+    if(num < 0)
+    {
+        max_value = 2*absolute_value(num) - 1;
+    }
+    else
+    {
+        max_value = 2*num;
+    }
+    for(size_t i = max_value; i >= 0; --i)
+    {
+        if(num == solutions[i])
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+double absolute_value(double value)
+{
+    if(value < 0)
+    {
+        value *= -1;
+    }
+    return value;
+}
+
+std::pair<double, double> Solver::Newton_Raphson(Polynomial& pN, Polynomial& derivative, double& aproximation, size_t& grade) noexcept
+{
+    double pN_aprox = pN(aproximation);
+    double dpN_aprox = derivative(aproximation);
+    double mistake;
+    for(size_t i = 0; i < 5; ++i)
+    {
+        mistake = pN_aprox/dpN_aprox;
+        aproximation -= mistake;
+        pN_aprox = pN(aproximation);
+        dpN_aprox = derivative(aproximation);
+        mistake = absolute_value(mistake);
+        if(mistake < 0.000001)
+        {break;}
+    }
+    return std::make_pair(aproximation, mistake);
 }
 
 std::vector<double> Solver::get_roots() noexcept
@@ -276,7 +423,12 @@ std::vector<double> Solver::get_roots() noexcept
         grade_2_polynomial(in_polynomial, solutions);
         return solutions;
     default:
-        return grade_3_or_greater_polynomial(in_polynomial);
+        solutions = grade_3_or_greater_polynomial(in_polynomial, grade);
+        if(get_grade(in_polynomial) == 2)
+        {
+            return grade_2_polynomial(in_polynomial, solutions);
+        }
+        return solutions;
     }
     return {};
 }

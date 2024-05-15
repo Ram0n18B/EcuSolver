@@ -229,7 +229,16 @@ int main()
 
     std::cout<< "Testing Newton_Raphson"<< std::endl;
     {
-        std::cout<< "WARNING: Newton_Raphson hasn't been tested yet"<< std::endl;
+        Polynomial pN;
+        pN.emplace(new Monomial(17, "w", 4));
+        pN.emplace(new Monomial(24,"w", 3));
+        pN.emplace(new Monomial(35, "w", 2));
+        pN.emplace(new Monomial(27, "w"));
+        pN.emplace(new Monomial(5, "w", 0));
+        size_t grade = 4;
+        std::vector<double> solutions{};
+        std::vector<double> expected = {-0.260149, -0.771259};
+        assert_equal(Solver::Newton_Raphson_loop(pN, solutions, grade), expected);
     }
 
     std::cout<< "Testing grade_3_or_greater_polynomial"<< std::endl;
@@ -239,11 +248,20 @@ int main()
         pN.emplace(new Monomial(6, "z", 2));
         pN.emplace(new Monomial(11, "z"));
         pN.emplace(new Monomial(6, "z", 0));
+        size_t grade = 3;
         std::vector<double> expected = {(double)-1, (double)-2, (double)-3};
-        assert_equal(Solver::grade_3_or_greater_polynomial(pN), expected);
+        assert_equal(Solver::grade_3_or_greater_polynomial(pN, grade), expected);
     }
     {
-        //Second test missing;
+        Polynomial pN;
+        pN.emplace(new Monomial(17, "w", 4));
+        pN.emplace(new Monomial(24,"w", 3));
+        pN.emplace(new Monomial(35, "w", 2));
+        pN.emplace(new Monomial(27, "w"));
+        pN.emplace(new Monomial(5, "w", 0));
+        size_t grade = 4;
+        std::vector<double> expected = {-0.26014, -0.77125};
+        assert_equal(Solver::grade_3_or_greater_polynomial(pN, grade), expected);
     }
 
     std::cout<< "Testing get_roots"<< std::endl;

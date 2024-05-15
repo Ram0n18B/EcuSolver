@@ -36,9 +36,17 @@ size_t Monomial::get_exponent()
     return exponent;
 }
 
-double Monomial::evaluate(double value)
+double Monomial::operator() (double value) noexcept
 {
     return coefficient * pow(value, exponent);
+}
+
+void Monomial::reduce_grade() noexcept
+{
+    if(this->exponent != 0)
+    {
+        exponent--;
+    }
 }
 
 bool operator !=(const Monomial& first, const Monomial& second) noexcept

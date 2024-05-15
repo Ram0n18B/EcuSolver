@@ -30,7 +30,9 @@ public:
     
     size_t get_exponent();
 
-    double evaluate(double value);
+    double operator () (double value) noexcept;
+
+    void reduce_grade() noexcept;
 
     friend bool operator !=(const Monomial& first, const Monomial& second) noexcept;
 

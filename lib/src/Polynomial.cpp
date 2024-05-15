@@ -10,12 +10,12 @@ bool ExponentComparer::operator () (MonomialPtr first, MonomialPtr second) noexc
     return first->get_exponent() < second->get_exponent();
 }
 
-double Polynomial::evaluate(double value) noexcept
+double Polynomial::operator() (double value) noexcept
 {
     double total = 0;
     for(size_t i = 0; i < this->size(); ++i)
     {
-        total += this->get_container()[i]->evaluate(value);
+        total += this->get_container()[i]->operator()(value);
     }
     return total;
 }
@@ -62,6 +62,18 @@ double Polynomial::independant_term() noexcept
         }
     }
     return 0;
+}
+
+void Polynomial::reduce_grade() noexcept
+{
+    if(this->independant_term() == 0)
+    {
+        return;
+    }
+    for(size_t i = 0; i < this->size(); ++i)
+    {
+        this->get_container()[i]->reduce_grade();
+    }
 }
 
 bool operator !=(const Polynomial& first, const Polynomial& second) noexcept

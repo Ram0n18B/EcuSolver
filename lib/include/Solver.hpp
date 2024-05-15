@@ -49,7 +49,7 @@ public:
     static std::vector<double> grade_2_polynomial(Polynomial& pN, std::vector<double>& solutions) noexcept;
 
     //Gets the root of a polynomial if its grade is  3 o greater
-    static std::vector<double> grade_3_or_greater_polynomial(Polynomial& pN) noexcept;
+    static std::vector<double> grade_3_or_greater_polynomial(Polynomial& pN, size_t& grade) noexcept;
 
     //Gets the roots of a polynomial by the Ruffini method
     static std::vector<double> Ruffini(Polynomial& pN) noexcept;
@@ -57,12 +57,22 @@ public:
     //Derivates a polynomial
     static Polynomial derivative(Polynomial& pn);
 
-    /*Aproximates the roots of a polynomial by the Newton-Raphson itertion method if it hasn't
+    /*Aproximates the roots of a polynomial by the Newton-Raphson iteration method if it hasn't
     integer roots*/
-    static std::vector<double> Newton_Raphson(Polynomial& pN, std::vector<double> solutions) noexcept;
+    static std::vector<double> Newton_Raphson_loop(Polynomial& pN, std::vector<double>& solutions, size_t& grade) noexcept;
+
+    /*Finds the next aproximation to the root*/
+    static std::pair<double, double> Newton_Raphson(Polynomial& pN, Polynomial& derivative, double& aproximation, size_t& grade) noexcept;
 
     //Returns the real roots of a polynomial if it has any
     std::vector<double> get_roots() noexcept;
 };
 
 size_t superindex(char prefix, size_t& i, std::string& expression);
+
+//Performs a synthetic division used in the Ruffini method
+std::pair<Polynomial, double> synthetic_division(Polynomial& pN, double divisor) noexcept;
+
+double absolute_value(double value);
+
+bool repeated(double num, std::vector<double>& solutions);
