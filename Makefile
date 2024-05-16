@@ -2,10 +2,10 @@ CXX         = clang++ -std=c++17
 WARN        = -Wall -Wextra -Wcast-align -Wno-sign-compare -Wno-write-strings -Wno-parentheses -Wfloat-equal -pedantic
 RM = rm
 
-INCLUDEPATH = -I$(LIB)/include
+INCLUDEPATH = -I$(LIB)/include `pkg-config --cflags gtk+-3.0`
 
-FLAGS       = -DDEBUG -g -O0
-LIBLINK     = $(OBJECTS) -lpthread
+FLAGS       = -DDEBUG -g -O0 $(WARN)
+LIBLINK     = $(OBJECTS) -lpthread `pkg-config --libs gtk+-3.0`
 
 # Libs
 LIB         = ./lib
