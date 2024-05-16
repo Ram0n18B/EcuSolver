@@ -7,6 +7,8 @@
 
 #include <gtk/gtk.h>
 #include <iostream>
+#include <iomanip>   // Para std::setprecision
+#include <sstream>   // Para std::stringstream   
 #include <string>
 #include <vector>
 #include "Solver.hpp"  // Asegúrate de incluir correctamente tus archivos de cabecera
@@ -34,11 +36,17 @@ void on_button_clicked(GtkWidget* button, gpointer user_data) {
     if (solutions.empty()) {
         show_dialog("El polinomio no tiene raíces reales");
     } else if (solutions.size() == 1) {
-        show_dialog("Solución: " + std::to_string(solutions[0]));
+        // Mostrar la solución con dos decimales
+        std::stringstream stream;
+        stream << "Solución: " << std::fixed << std::setprecision(2) << solutions[0];
+        show_dialog(stream.str());
     } else {
         std::string result = "Soluciones: ";
         for (double solution : solutions) {
-            result += std::to_string(solution) + " ";
+            // Mostrar cada solución con dos decimales
+            std::stringstream stream;
+            stream << std::fixed << std::setprecision(2) << solution << ",";
+            result += stream.str();
         }
         show_dialog(result);
     }
