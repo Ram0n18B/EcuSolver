@@ -25,7 +25,6 @@ public:
 
     double operator () (double value) noexcept;
 
-    //Fill the polynomial with null terms in order to keep the esponent decreasing sequence
     void fill_null_terms() noexcept;
 
     MonomialPtr operator [] (size_t i) noexcept;

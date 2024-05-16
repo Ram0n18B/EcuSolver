@@ -7,13 +7,13 @@
 
 #include <gtk/gtk.h>
 #include <iostream>
-#include <iomanip>   // Para std::setprecision
-#include <sstream>   // Para std::stringstream   
+#include <iomanip>  
+#include <sstream>     
 #include <string>
 #include <vector>
-#include "Solver.hpp"  // Asegúrate de incluir correctamente tus archivos de cabecera
+#include "Solver.hpp"  
 
-// Función para mostrar un cuadro de diálogo con el resultado
+
 void show_dialog(const std::string& message) {
     GtkWidget* dialog = gtk_message_dialog_new(NULL,
                                                 GTK_DIALOG_MODAL,
@@ -24,7 +24,6 @@ void show_dialog(const std::string& message) {
     gtk_widget_destroy(dialog);
 }
 
-// Función para ejecutar el código al hacer clic en el botón
 void on_button_clicked(GtkWidget* button, gpointer user_data) {
     GtkEntry* entry = GTK_ENTRY(user_data);
     const char* equation = gtk_entry_get_text(entry);
@@ -36,14 +35,14 @@ void on_button_clicked(GtkWidget* button, gpointer user_data) {
     if (solutions.empty()) {
         show_dialog("El polinomio no tiene raíces reales");
     } else if (solutions.size() == 1) {
-        // Mostrar la solución con dos decimales
+        
         std::stringstream stream;
         stream << "Solución: " << std::fixed << std::setprecision(2) << solutions[0];
         show_dialog(stream.str());
     } else {
         std::string result = "Soluciones: ";
         for (double solution : solutions) {
-            // Mostrar cada solución con dos decimales
+            
             std::stringstream stream;
             stream << std::fixed << std::setprecision(2) << solution << ",";
             result += stream.str();
@@ -53,23 +52,21 @@ void on_button_clicked(GtkWidget* button, gpointer user_data) {
 }
 
 void on_window_closed(GtkWidget* widget, GdkEvent* event, gpointer data) {
-    gtk_main_quit(); // Finalizar la ejecución de la aplicación al cerrar la ventana
+    gtk_main_quit(); 
 }
 
 int main(int argc, char** argv) {
     gtk_init(&argc, &argv);
 
-    // Cargar el archivo de diseño de la interfaz gráfica
+    
     GtkBuilder* builder = gtk_builder_new();
     gtk_builder_add_from_file(builder, "design.ui", NULL);
 
-    // Obtener los widgets necesarios
     GtkWidget* window = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
     GtkWidget* entry = GTK_WIDGET(gtk_builder_get_object(builder, "entry"));
     GtkWidget* button = GTK_WIDGET(gtk_builder_get_object(builder, "button"));
     GtkWidget* close_button = GTK_WIDGET(gtk_builder_get_object(builder, "close"));
 
-    // Conectar la señal "clicked" del botón a la función on_button_clicked
     g_signal_connect(button, "clicked", G_CALLBACK(on_button_clicked), entry);
 
     g_signal_connect(close_button, "clicked", G_CALLBACK(gtk_window_close), window);
@@ -77,10 +74,8 @@ int main(int argc, char** argv) {
     g_signal_connect(window, "destroy", G_CALLBACK(on_window_closed), NULL);
 
 
-    // Mostrar la ventana principal
     gtk_widget_show_all(window);
 
-    // Ejecutar el bucle principal de eventos
     gtk_main();
 
     return 0;
